@@ -145,7 +145,7 @@ assert.strictEqual(h.store.get('wb-theme'), 'dark', '偏好必须持久化到 lo
 assert.strictEqual(menu.classList.contains('open'), false, '选完应当收起菜单');
 assert.strictEqual(h.el('themeOptDark').classList.contains('active'), true, '深色那一档要标成当前项');
 assert.strictEqual(h.el('themeOptLight').classList.contains('active'), false, '其它档不能残留 active');
-assert.strictEqual(btn.title, '颜色主题: 深色', '按钮提示要说明当前档位');
+assert.strictEqual(btn.title, 'Color theme: Dark', '按钮提示要说明当前档位');
 
 // ---- 4. 首次绘制前就定好主题；跟随系统时读 prefers-color-scheme ----
 const darkOnLoad = makeHarness({ stored: 'dark' });

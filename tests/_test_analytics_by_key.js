@@ -87,21 +87,21 @@ api.renderKeyTable({ keys: keys });
 let out = document.getElementById('analyticsKeyTbody').innerHTML;
 check('six keys, six rows', (out.match(/<tr>/g) || []).length === 6, (out.match(/<tr>/g) || []).length);
 check('the row count is announced next to the title',
-      document.getElementById('analyticsKeyCount').textContent === '(6 把)',
+      document.getElementById('analyticsKeyCount').textContent === '(6)',
       document.getElementById('analyticsKeyCount').textContent);
 check('every cell carries a data-label (the phone layout depends on it)',
       (out.match(/<td/g) || []).length === (out.match(/data-label=/g) || []).length,
       (out.match(/<td/g) || []).length + ' vs ' + (out.match(/data-label=/g) || []).length);
 check('a named key shows its name', out.includes('甲 · 生产'));
-check('a cn-bound key is labelled', out.includes('国内版'));
-check('an intl-bound key is labelled', out.includes('国际版'));
-check('a key that used both exits is flagged as mixed', out.includes('跟随 · 混合'));
+check('a cn-bound key is labelled', out.includes('China'));
+check('an intl-bound key is labelled', out.includes('Global'));
+check('a key that used both exits is flagged as mixed', out.includes('Follow · mixed'));
 check('a key that merely follows the model is labelled plainly',
-      out.includes('>跟随<'));
-check('a disabled key says so', out.includes('已禁用'));
+      out.includes('>Follow<'));
+check('a disabled key says so', out.includes('Disabled'));
 check('the launcher key is attributed to the start-up argument', out.includes('启动参数'));
-check('panel keys are marked as panel keys', out.includes('面板 Key'));
-check('failures are surfaced next to the request count', out.includes('失败 1'));
+check('panel keys are marked as panel keys', out.includes('Panel key'));
+check('failures are surfaced next to the request count', out.includes('failed 1'));
 check('the credit column is fixed to two decimals', out.includes('3.50'));
 check('cache hit is rendered as a percentage', out.includes('12.5%'));
 
@@ -112,14 +112,14 @@ check('(无 key) is rendered separately', out.includes('(无 key)'));
 check('bucket rows show no exit instead of guessing one',
       (out.match(/—<\/span><\/td>/g) || []).length === 2,
       (out.match(/—<\/span><\/td>/g) || []).length);
-check('a bucket row is never badged as disabled', !/\(切换前\)[\s\S]{0,400}?已禁用/.test(out));
+check('a bucket row is never badged as disabled', !/\(切换前\)[\s\S]{0,400}?Disabled/.test(out));
 
 console.log();
 console.log('[3] model pills');
 check('each model gets a pill', out.includes('glm-5.3') && out.includes('kimi-k2'));
-check('the overflow pill reports how many models it covers', out.includes('2 个模型'));
+check('the overflow pill reports how many models it covers', out.includes('2 models'));
 check('a key with no calls says so rather than rendering nothing',
-      api.keyModelPills(key({ models: [], models_other: null })).includes('无调用'));
+      api.keyModelPills(key({ models: [], models_other: null })).includes('No calls'));
 
 console.log();
 console.log('[4] free text from the settings page cannot become markup');
@@ -129,11 +129,11 @@ check('a model name is escaped', !out.includes('<b>bold</b>') && out.includes('&
 console.log();
 console.log('[5] the footer explains what the reader cannot infer');
 const note = document.getElementById('analyticsKeyNote').innerHTML;
-check('the cross-exit count is called out', note.includes('1 把 Key 没有绑定出口'), note);
-check('the upgrade cut-off is stated once', note.includes('(切换前)'));
+check('the cross-exit count is called out', note.includes('1 key has no exit bound'), note);
+check('the upgrade cut-off is stated once', note.includes('(before switch)'));
 api.renderKeyTable({ keys: [key({ name: 'x', realm: 'cn' })] });
 check('the footer does not cry wolf about cross-exit keys when there are none',
-      !document.getElementById('analyticsKeyNote').innerHTML.includes('没有绑定出口'));
+      !document.getElementById('analyticsKeyNote').innerHTML.includes('no exit bound'));
 
 console.log();
 console.log('[6] empty and degraded payloads');
@@ -142,7 +142,7 @@ out = document.getElementById('analyticsKeyTbody').innerHTML;
 check('an empty axis renders one full-width empty cell', out.includes('colspan="8"'), out);
 check('the empty state does not claim a count',
       document.getElementById('analyticsKeyCount').textContent === '');
-check('a panel with no keys is told so', document.getElementById('analyticsKeyNote').innerHTML.includes('还没有任何 API Key'));
+check('a panel with no keys is told so', document.getElementById('analyticsKeyNote').innerHTML.includes('No API key is configured yet'));
 api.renderKeyTable({});
 check('a payload without the axis at all does not throw', document.getElementById('analyticsKeyTbody').innerHTML.includes('colspan="8"'));
 

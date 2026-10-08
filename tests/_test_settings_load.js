@@ -119,7 +119,7 @@ global.__toasts = toasts;
   console.log = realLog;
 
   // 1. 一次成功的读取不该报错——异常被 catch 吞掉正是这个 bug 的藏身处。
-  const failed = toasts.filter(([msg]) => String(msg).indexOf('读取设置失败') === 0);
+  const failed = toasts.filter(([msg]) => String(msg).indexOf('Could not load settings') === 0);
   assert.deepStrictEqual(failed, [],
     'loadSettings 抛异常了：' + (failed[0] ? failed[0][0] : ''));
 
@@ -133,11 +133,11 @@ global.__toasts = toasts;
   for(const name of ['Cursor', 'DSH', '本地测试']){
     assert.ok(list.includes(name), '列表里缺少 ' + name);
   }
-  assert.ok(list.includes('固定国际版出口'), '固定国际版出口的徽章丢了');
-  assert.ok(list.includes('固定国内版出口'), '固定国内版出口的徽章丢了');
-  assert.ok(list.includes('限 deepseek*'), '模型白名单徽章丢了');
+  assert.ok(list.includes('Global exit only'), '固定国际版出口的徽章丢了');
+  assert.ok(list.includes('China exit only'), '固定国内版出口的徽章丢了');
+  assert.ok(list.includes('limited to deepseek*'), '模型白名单徽章丢了');
   assert.ok(list.includes('wb-aaaa****1111'), '掩码后的 Key 没显示');
-  assert.equal(element('setKeyState').textContent, '(2 个生效)',
+  assert.equal(element('setKeyState').textContent, '(2 active)',
     '计数只算启用中的 Key');
 
   // 3. 空列表时给的是提示语，不是一片空白。
@@ -145,13 +145,13 @@ global.__toasts = toasts;
 
   // 4. 价估算总开关：复选框要跟着后端值，关掉时 body 挂 pricing-off。
   assert.equal(element('setPricingEnabled').checked, false, '总开关复选框没写回');
-  assert.equal(element('setPricingEnabledState').textContent, '(已关闭)');
+  assert.equal(element('setPricingEnabledState').textContent, '(off)');
   assert.ok(bodyClasses.has('pricing-off'), '关闭时 body 应挂 pricing-off');
 
   // 5. 异常后面那些区块也得填上：漏填说明执行又提前断了。
   assert.equal(element('setVersion').textContent, 'v1.6.14');
   assert.equal(element('setAccountsDir').textContent, '/data/accounts');
-  assert.equal(element('setPricingState').textContent, '(每 5 分钟)');
+  assert.equal(element('setPricingState').textContent, '(every 5 minutes)');
   assert.equal(element('setAutoSwitch').checked, true);
   assert.equal(element('setDailyChatWeb').checked, false);
   assert.equal(element('setLocalWebTools').checked, true);

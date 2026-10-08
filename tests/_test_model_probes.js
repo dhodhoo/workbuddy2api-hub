@@ -66,27 +66,27 @@ function render(models){
 // 1. The probe measured less than the claimed spec -> warn with the ratio.
 let out = render([{ id: 'glm-5.2', context_length: 1000000,
                     max_output_tokens: 131072, output_clamp: 32000 }]);
-assert.ok(out.includes('钳制'), 'clamped model must show the 钳制 note: ' + out);
+assert.ok(out.includes('Clamped'), 'clamped model must show the 钳制 note: ' + out);
 assert.ok(out.includes('4.1×'), 'ratio must be claimed/measured (131072/32000 = 4.1×): ' + out);
 assert.ok(out.includes('32K'), 'measured value must be shown: ' + out);
 assert.ok(out.includes('⚠'), 'clamped model must carry the warning marker: ' + out);
-assert.ok(out.includes('声称 131K'), 'tooltip must carry the claimed value: ' + out);
+assert.ok(out.includes('Claimed 131K'), 'tooltip must carry the claimed value: ' + out);
 
 // 2. The probe says the claimed spec holds -> green check, no clamp note.
 out = render([{ id: 'm2', context_length: 1000,
                 max_output_tokens: 32000, output_clamp: 32000 }]);
-assert.ok(!out.includes('钳制'), 'a non-clamped probe must not warn: ' + out);
+assert.ok(!out.includes('Clamped'), 'a non-clamped probe must not warn: ' + out);
 assert.ok(out.includes('✓'), 'a non-clamped probe must show the OK marker: ' + out);
 
 // 3. No probe at all -> the plain spec value stays (default behaviour).
 out = render([{ id: 'm3', context_length: 1000, max_output_tokens: 32000 }]);
-assert.ok(!out.includes('钳制') && !out.includes('⚠'),
+assert.ok(!out.includes('Clamped') && !out.includes('⚠'),
           'an unprobed model keeps the plain value: ' + out);
 assert.ok(out.includes('32K'), 'an unprobed model still shows its spec value: ' + out);
 
 // 4. Probed but no spec value -> measured value labelled as a measured cap.
 out = render([{ id: 'm4', context_length: 1000, output_clamp: 48000 }]);
 assert.ok(out.includes('48K'), 'measured-only model must show the measured value: ' + out);
-assert.ok(out.includes('实测上限'), 'measured-only model must label the measured cap: ' + out);
+assert.ok(out.includes('Measured limit'), 'measured-only model must label the measured cap: ' + out);
 
 console.log('model probe dashboard assertions passed');

@@ -95,10 +95,10 @@ const perf = {
 /* One entry per data row, in render order. The summary row has no bar, so
  * matching on the bar element is what separates the two. */
 const shareCells = (out) => [...out.matchAll(
-  /data-label="用量占比"><span class="bar-fill" style="width:([\d.]+)%"><\/span> <span[^>]*>([\d.]+)%<\/span>/g
+  /data-label="Usage share"><span class="bar-fill" style="width:([\d.]+)%"><\/span> <span[^>]*>([\d.]+)%<\/span>/g
 )].map(m => ({ bar: Number(m[1]), pct: Number(m[2]) }));
-const summaryTok = (out) => { const m = out.match(/(?:筛选结果合计|全部模型合计)[\s\S]*?<td data-label="总 Token">[\s\S]*?>([^<]*)</); return m ? m[1] : null; };
-const summaryShare = (out) => { const m = out.match(/data-label="用量占比">([^<]*)</); return m ? m[1] : null; };
+const summaryTok = (out) => { const m = out.match(/(?:Filtered total|All models total)[\s\S]*?<td data-label="Total tokens">[\s\S]*?>([^<]*)</); return m ? m[1] : null; };
+const summaryShare = (out) => { const m = out.match(/data-label="Usage share">([^<]*)</); return m ? m[1] : null; };
 
 let pass = 0, fail = 0;
 const check = (label, cond, extra) => { if (cond) { pass++; console.log('  [PASS] ' + label); } else { fail++; console.log('  [FAIL] ' + label + (extra !== undefined ? '  ' + extra : '')); } };

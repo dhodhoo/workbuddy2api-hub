@@ -87,7 +87,7 @@ const api = new Function(script + `
   //     把整个页面拉出横向滚动条。
   assert.ok(/<table class="data-cards limits-cards">/.test(html),
             '限额表必须带 data-cards limits-cards');
-  for(const label of ['全局默认', '国际版', '国内版']){
+  for(const label of ['Global default', 'Global', 'China']){
     const hits = html.split('data-label="' + label + '"').length - 1;
     assert.equal(hits, 4, '「' + label + '」格应有 4 个（每条护栏一个），实际 ' + hits);
   }
@@ -104,19 +104,19 @@ const api = new Function(script + `
   assert.equal(api.limitEl('Global', 'Reserve').value, '10');
   assert.equal(api.limitEl('Intl', 'Reserve').value, '3');
   assert.equal(api.limitEl('Cn', 'Reserve').value, '');
-  assert.equal(api.limitEl('Cn', 'Reserve').placeholder, '继承 10');
-  assert.equal(api.limitEl('Intl', 'DailyToken').placeholder, '继承 1,000');
+  assert.equal(api.limitEl('Cn', 'Reserve').placeholder, 'inherit 10');
+  assert.equal(api.limitEl('Intl', 'DailyToken').placeholder, 'inherit 1,000');
   assert.equal(element('setLimitsPerRealm').checked, true, '有覆盖时勾上分版本');
-  assert.equal(element('setReserveState').textContent, '(全局 10 · 国际版 3)');
-  assert.equal(element('setDailyTokenState').textContent, '(全局 1,000)');
+  assert.equal(element('setReserveState').textContent, '(all realms: 10 · Global 3)');
+  assert.equal(element('setDailyTokenState').textContent, '(all realms: 1,000)');
 
   // 3. 没有覆盖时：分版本收起，两个版本列都留空。
   api.applyLimits({limits: {
     reserve_credits: {global: 0, intl: null, cn: null},
   }});
   assert.equal(element('setLimitsPerRealm').checked, false);
-  assert.equal(element('setLimitsState').textContent, '(全局生效)');
-  assert.equal(element('setReserveState').textContent, '(全部关闭)');
+  assert.equal(element('setLimitsState').textContent, '(global values in effect)');
+  assert.equal(element('setReserveState').textContent, '(all off)');
 
   // 4. 收起分版本时保存：即使版本列里还留着旧数字，也按“继承”发出去。
   element('setLimitsPerRealm').checked = false;

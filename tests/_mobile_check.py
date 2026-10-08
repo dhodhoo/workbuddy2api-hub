@@ -226,7 +226,7 @@ def login(page):
     page.wait_for_timeout(1200)
     if page.locator("#panelPwdInput").count():
         page.fill("#panelPwdInput", PASSWORD)
-        page.click("button:has-text('进入面板')")
+        page.click("button:has-text('Enter dashboard')")
         page.wait_for_timeout(1500)
 
 

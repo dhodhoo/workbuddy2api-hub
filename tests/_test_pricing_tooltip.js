@@ -66,11 +66,11 @@ const direct = {
   assert.ok(text.includes('09bbbab71283'), '策略 id 要在: ' + text);
   assert.ok(text.includes('0.02185') && text.includes('0.63'),
             '三档单价要在: ' + text);
-  assert.ok(text.includes('输入（缓存未命中）') && text.includes('输入（缓存命中）')
-            && text.includes('输出'), '三档要分别标明: ' + text);
+  assert.ok(text.includes('Input (cache miss)') && text.includes('Input (cache hit)')
+            && text.includes('Output'), '三档要分别标明: ' + text);
   assert.ok(text.includes('7.10'), '汇率要在: ' + text);
-  assert.ok(text.includes('直接匹配'), '要说明是直接匹配: ' + text);
-  assert.ok(!text.includes('人工映射'), '直接匹配不得写成人工映射: ' + text);
+  assert.ok(text.includes('direct match'), '要说明是直接匹配: ' + text);
+  assert.ok(!text.includes('manual mapping table'), '直接匹配不得写成人工映射: ' + text);
   assert.ok(text.includes('deepseek/deepseek-v4.1-flash'), 'or_id 要在: ' + text);
 }
 
@@ -82,10 +82,10 @@ const direct = {
     cost_or_id: 'deepseek/deepseek-chat-v3.1',
   });
   const text = api.costTitle(r);
-  assert.ok(text.includes('人工映射表'), '要说明来自映射表: ' + text);
+  assert.ok(text.includes('manual mapping table'), '要说明来自映射表: ' + text);
   assert.ok(text.includes('deepseek-v3-1-volc → deepseek/deepseek-chat-v3.1'),
             '要给出原始名 → or_id: ' + text);
-  assert.ok(!text.includes('推断'), '记录下来的映射不该标成推断: ' + text);
+  assert.ok(!text.includes('inferred'), '记录下来的映射不该标成推断: ' + text);
 }
 
 // 3. 老策略行没有 via 字段，只能按当前映射表推断 —— 必须照实标出来。
@@ -96,7 +96,7 @@ const direct = {
     cost_or_id: 'tencent/hy4-preview',
   });
   const text = api.costTitle(r);
-  assert.ok(text.includes('推断'), '推断来的要标注: ' + text);
+  assert.ok(text.includes('inferred'), '推断来的要标注: ' + text);
   assert.ok(text.includes('hy4-preview-f → tencent/hy4-preview'),
             '推断也要给出映射链: ' + text);
 }
@@ -109,10 +109,10 @@ const direct = {
     cost_or_id: 'deepseek/deepseek-r1-0528',
   });
   const text = api.costTitle(r);
-  assert.ok(text.includes('变体后缀继承'), '要说明是变体继承: ' + text);
-  assert.ok(text.includes('deepseek-r1-0528-lkeap → deepseek-r1-0528（基准） → deepseek/deepseek-r1-0528'),
+  assert.ok(text.includes('variant suffix inheritance'), '要说明是变体继承: ' + text);
+  assert.ok(text.includes('deepseek-r1-0528-lkeap → deepseek-r1-0528 (base) → deepseek/deepseek-r1-0528'),
             '三段链要在: ' + text);
-  assert.ok(text.includes('剥掉的后缀：-lkeap'), '剥掉的后缀要在: ' + text);
+  assert.ok(text.includes('Stripped suffix: -lkeap'), '剥掉的后缀要在: ' + text);
   assert.equal(api.costVariantSuffix(r), '-lkeap');
   // 基准名不是前缀时不能瞎截。
   assert.equal(api.costVariantSuffix({model: 'x-lkeap', cost_inherited_from: 'other'}), '');
@@ -126,7 +126,7 @@ const direct = {
     cost_rates: {input_cache_hit: 0.0378, input_cache_miss: 0.7506, output: 2.2509},
   });
   const text = api.costTitle(r);
-  assert.ok(text.includes('第 2 档'), '档位序号要在: ' + text);
+  assert.ok(text.includes('tier 2'), '档位序号要在: ' + text);
   assert.ok(text.includes('每天 16:00–24:00 UTC'), '档位条件要在: ' + text);
   assert.ok(text.includes('0.7506') && text.includes('2.2509'),
             '要显示该档的三档价: ' + text);
@@ -136,10 +136,10 @@ const direct = {
 // 6. 补算与出厂快照两条兜底说明还在。
 {
   const backfilled = api.costTitle(Object.assign({}, direct, {cost_backfilled: true}));
-  assert.ok(backfilled.includes('补算'), '补算标记要在: ' + backfilled);
+  assert.ok(backfilled.includes('back-filled'), '补算标记要在: ' + backfilled);
   const builtin = api.costTitle(Object.assign({}, direct, {cost_source: 'builtin',
     cost_source_at: null}));
-  assert.ok(builtin.includes('出厂快照'), '出厂快照依据要在: ' + builtin);
+  assert.ok(builtin.includes('factory snapshot'), '出厂快照依据要在: ' + builtin);
 }
 
 // 7. 未定价：照实说，不给 0、不给空白。
@@ -148,9 +148,9 @@ const direct = {
     cost_unit: null, cost_currency: null, cost_usd_cny: null, cost_or_id: null,
     cost_via: null});
   const text = api.costTitle(r);
-  assert.equal(text, '按 OpenRouter 公布的模型价折算的等价 token 花费\n该模型暂无定价数据',
+  assert.equal(text, 'Equivalent token cost converted from the model prices OpenRouter publishes\nNo pricing data for this model yet',
                '未定价只该有一句说明: ' + text);
-  assert.ok(api.costTipHtml(r).includes('该模型暂无定价数据'), '气泡也要说这句');
+  assert.ok(api.costTipHtml(r).includes('No pricing data for this model yet'), '气泡也要说这句');
   assert.ok(!api.costTipHtml(r).includes('0.00'), '未定价不得显示 0');
   assert.deepEqual(api.costTipModel(r).rates, [], '未定价没有三档价可言');
 }
@@ -160,7 +160,7 @@ const direct = {
   const r = Object.assign({}, direct, {
     cost_rates: {input_cache_hit: null, input_cache_miss: 0.3, output: 1.2}});
   const text = api.costTitle(r);
-  assert.ok(text.includes('未公布，按未命中价计'), '要说明兜底口径: ' + text);
+  assert.ok(text.includes('not published, charged at the unmatched price'), '要说明兜底口径: ' + text);
 }
 
 // 9. 动态文本一律转义：模型名来自上游，不能当 HTML 拼进气泡。
@@ -175,7 +175,7 @@ const direct = {
 
 // 10. 源码级：最近请求那一列挂的是 data-cost-key（自绘气泡），不是原生 title。
 {
-  const cell = html.match(/<td data-label="OpenRouter 价估算"[^>]*>/g) || [];
+  const cell = html.match(/<td data-label="OpenRouter estimate"[^>]*>/g) || [];
   const recent = cell.find(tag => tag.includes('data-cost-key'));
   assert.ok(recent, '最近请求的价估算列要有 data-cost-key: ' + cell.join(' | '));
   assert.ok(!recent.includes('title='), '自绘气泡不应再挂原生 title: ' + recent);

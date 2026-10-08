@@ -78,7 +78,7 @@ const api = new Function(script + `
   api.addProxySlotRow();
   assert.equal(api.rows().length, 2, 'the new row is in the working copy');
   assert.equal(api.dirty(), true, 'adding a row marks the editor dirty');
-  assert.ok(api.state().includes('未保存'), 'the header admits the list is unsaved: ' + api.state());
+  assert.ok(api.state().includes('Not saved'), 'the header admits the list is unsaved: ' + api.state());
 
   // 3. The periodic refresh must not wipe it (this is the reported bug).
   serverSlots = [{id: 'a', name: 'a', url: 'http://127.0.0.1:1', enabled: true},
