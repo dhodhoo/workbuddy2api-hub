@@ -148,4 +148,32 @@ if (offenders.length) {
   assert.fail(`${offenders.length} Chinese string(s) still reach the panel:\n` + report.join('\n'));
 }
 
-console.log('panel English OK: 0 Chinese strings outside comments');
+// ---------------------------------------------------------- no glued words
+// The panel used to translate itself string by string, and a heading built from
+// fragments came out as "CurrentDisableAccountsandModel" - no Chinese left, so
+// the check above passed while the page read as nonsense. The copy is written
+// in the source now, so a word like that can only be a typo or a bad merge; the
+// product names below are the only camelCase the page is allowed to contain.
+const PRODUCT_NAMES = /^(WorkBuddy|OpenRouter|DeepSeek|DuckDuckGo|GitHub|CodeBuddy|VSCode|JavaScript|TypeScript|PowerShell|LaTeX|OpenAI|ChatGPT)$/;
+const glued = [];
+for (const m of html.matchAll(/>([^<>]*[A-Za-z][^<>]*)</g)) {
+  if (inZone(m.index)) continue;
+  const text = m[1].replace(/\s+/g, ' ').trim();
+  for (const word of text.match(/[A-Za-z]{5,}/g) || []) {
+    if (/[a-z][A-Z]/.test(word) && !PRODUCT_NAMES.test(word)) {
+      glued.push(`  L${lineOf(m.index)} ${JSON.stringify(word)} in ${JSON.stringify(text.slice(0, 70))}`);
+    }
+  }
+}
+for (const m of html.matchAll(attrRe)) {
+  if (inZone(m.index)) continue;
+  for (const word of decodeEntities(m[1]).match(/[A-Za-z]{5,}/g) || []) {
+    if (/[a-z][A-Z]/.test(word) && !PRODUCT_NAMES.test(word)) {
+      glued.push(`  L${lineOf(m.index)} ${JSON.stringify(word)} in @${m[0].split('=')[0]}`);
+    }
+  }
+}
+assert.deepStrictEqual(glued, [],
+  'words glued together in panel copy:\n' + glued.join('\n'));
+
+console.log('panel English OK: 0 Chinese strings outside comments, 0 glued words');
