@@ -9522,8 +9522,9 @@ def _parse_cli_args():
                     help="where the per-account credential files live (default: ./accounts)")
     ap.add_argument("--import-desktop", action="store_true",
                     help="import the desktop app credential as an account, then exit")
-    ap.add_argument("--panel-password", default=None,
-                    help="set the web panel password on startup (default: admin)")
+    ap.add_argument("--panel-password", default=os.environ.get("PANEL_PASSWORD") or None,
+                    help="set the web panel password on startup (default: admin; "
+                         "PANEL_PASSWORD env is used when the flag is absent)")
     args = ap.parse_args()
     return args
 
@@ -9608,7 +9609,7 @@ def _bootstrap_runtime(args):
         API_KEY_FILE_SET = True
     if args.panel_password:
         wb_settings.set_panel_password(ACCOUNTS_DIR, args.panel_password)
-        log("panel      : password set from --panel-password")
+        log("panel      : password set from --panel-password / PANEL_PASSWORD")
     elif wb_settings.panel_password_is_default(ACCOUNTS_DIR):
         log("panel      : password is still the default 'admin' - change it in the panel")
     POOL = wb_accounts.AccountPool(ACCOUNTS_DIR, log=log)
