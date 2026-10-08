@@ -38,9 +38,10 @@ The publish workflow pushes `ghcr.io/dhodhoo/workbuddy2api-hub` (`:latest`, the 
 `sha-<commit>`). Trigger it with **Actions → Publish Docker image → Run workflow**, or by
 publishing a GitHub Release.
 
-1. Make the package pullable: GitHub → your profile → **Packages** →
-   `workbuddy2api-hub` → **Package settings** → *Change visibility* → **Public**.
-   (Alternatively keep it private and give Railway registry credentials in the image source.)
+1. Pull it: `docker pull ghcr.io/dhodhoo/workbuddy2api-hub:latest`. The package inherits this
+   repository's public visibility, so an anonymous pull works - no registry credentials are
+   needed on Railway. If you ever switch the package to private, give Railway registry
+   credentials in the image source instead.
 2. Railway → **New Project** → **Deploy from Docker Image** →
    `ghcr.io/dhodhoo/workbuddy2api-hub:latest`, then apply the same volumes, variables and
    domain as in Path A.
@@ -76,3 +77,6 @@ curl -s https://<your-domain>/v1/models -H "Authorization: Bearer <key>"
 - **The image runs as root**, so Railway's volume permissions work without extra variables.
 - **One replica.** The scheduler and the usage accounting are in-process; running two replicas
   against the same volume would double the scheduled tasks and interleave the usage log.
+- **`TZ` is applied at runtime**, so the container clock follows the variable (the image bakes
+  `Asia/Shanghai` into `/etc/timezone` at build time, but the process reads `TZ`). Check it with
+  `docker exec <container> date`.
