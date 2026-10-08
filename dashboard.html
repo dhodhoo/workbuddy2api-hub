@@ -1348,7 +1348,7 @@ a:hover{text-decoration:underline}
         <button class="range-btn" id="btnLogLvlError" onclick="setLogFilterLevel('ERROR')">ERROR</button>
       </div>
 
-      <div style="display:inline-flex;gap:3px;background:var(--panel2);padding:3px;border-radius:8px;border:1px solid var(--line)">
+      <div style="display:inline-flex;gap:3px;background:var(--panel2);padding:3px;border-radius:8px;border:1px solid var(--line);max-width:100%;overflow-x:auto">
         <button class="range-btn active" id="btnLogTagAll" onclick="setLogFilterTag('')">All modules</button>
         <button class="range-btn" id="btnLogTagChat" onclick="setLogFilterTag('chat')">Chat</button>
         <button class="range-btn" id="btnLogTagTasks" onclick="setLogFilterTag('tasks')">Task rewards</button>
